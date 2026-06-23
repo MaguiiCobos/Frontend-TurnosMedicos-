@@ -1,27 +1,25 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
-      animation: {
-        'bounce-in': 'bounceIn 0.5s ease-out',
-        'fade-in': 'fadeIn 0.5s ease-out',
-      },
-      keyframes: {
-        bounceIn: {
-          '0%': { transform: 'scale(0.3)', opacity: '0' },
-          '50%': { transform: 'scale(1.05)' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
-        fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-      },
+      colors: {
+        coffee: {
+          50: '#f7f3f0',
+          100: '#e8ddd4',
+          200: '#d4c2a8',
+          300: '#bc9a7a',
+          400: '#a67c52',
+          500: '#8b5a2b',
+          600: '#6f4518',
+          700: '#523010',
+          800: '#3a1f0a',
+          900: '#1f0f04',
+        }
+      }
     },
   },
   plugins: [],
-}
+} 
