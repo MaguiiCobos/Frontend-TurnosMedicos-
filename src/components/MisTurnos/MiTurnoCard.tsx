@@ -4,8 +4,8 @@ import { TurnoDTO } from '../../types';
 interface MiTurnoCardProps {
   turno: TurnoDTO;
   onCancel: (turnoId: number) => void;
-  getStatusColor: (disponible: string) => string;
-  getStatusText: (disponible: string) => string;
+  getStatusColor: (estado: string) => string;
+  getStatusText: (estado: string) => string;
   userView?: boolean;
 }
 
@@ -19,7 +19,6 @@ const MiTurnoCard: React.FC<MiTurnoCardProps> = ({
   
   const formatFecha = (fechaString: string) => {
     try {
-      // Forzamos el parseo local sumando la hora para evitar desajustes de zona horaria
       const date = new Date(`${fechaString}T00:00:00`);
       return date.toLocaleDateString('es-ES', {
         weekday: 'long',
@@ -39,8 +38,8 @@ const MiTurnoCard: React.FC<MiTurnoCardProps> = ({
       <div className="space-y-1.5">
         <div className="flex items-center gap-2.5">
           <span className="text-xs font-mono text-slate-400">#{turno.id}</span>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getStatusColor(turno.disponible)}`}>
-            {getStatusText(turno.disponible)}
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getStatusColor(turno.estado)}`}>
+            {getStatusText(turno.estado)}
           </span>
         </div>
         
@@ -69,7 +68,7 @@ const MiTurnoCard: React.FC<MiTurnoCardProps> = ({
 
       {/* Boton para cancelar un turno */}
       <div className="flex items-center justify-end sm:border-l sm:border-slate-100 sm:pl-6">
-        {turno.disponible === 'RESERVADO' ? (
+        {turno.estado === 'RESERVADO' ? (
           <button
             onClick={() => {
               if (window.confirm('¿Está seguro de que desea cancelar su cita médica? Este espacio quedará disponible para otro paciente.')) {

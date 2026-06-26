@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { turnoService } from '../../services/api';
 import { TurnoDTO } from '../../types';
+import { useAuth } from '../../hooks/useAuth';
 
 const RecepcionistaView: React.FC = () => {
   const [turnos, setTurnos] = useState<TurnoDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filterEmail, setFilterEmail] = useState('');
+  const { getAccessToken } = useAuth();
 
   const cargarTurnos = async () => {
     setLoading(true);
     try {
-      const data = await turnoService.getAllTurnos();
+      const token = await getAccessToken();
+      const data = await turnoService.getAllTurnos(token);
       setTurnos(data);
     } catch (err) {
       setError('Error al cargar la lista de turnos globales.');
@@ -32,18 +35,12 @@ const RecepcionistaView: React.FC = () => {
       await turnoService.updateTurnoStatus(id, nuevoEstado as any);
       
       setTurnos(prev =>
-        prev.map(t => (t.id === id ? { ...t, disponible: nuevoEstado } : t))
+        prev.map(t => (t.id === id ? { ...t, estado: nuevoEstado } : t))
       );
     } catch (err) {
       alert('No se pudo actualizar el estado del turno.');
     }
   };
-
-  // Filtrado simple para ayudar a la recepcionista a buscar por paciente
-  const turnosFiltrados = turnos.filter(t => {
-    if (!filterEmail) return true;
-    return t.customerEmail?.toLowerCase().includes(filterEmail.toLowerCase());
-  });
 
   return (
     <div className="space-y-6">
@@ -80,7 +77,7 @@ const RecepcionistaView: React.FC = () => {
                 <th className="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 bg-white text-sm text-slate-700">
+            {/* <tbody className="divide-y divide-slate-100 bg-white text-sm text-slate-700">
               {turnosFiltrados.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-8 text-slate-400">No se encontraron turnos registrados.</td>
@@ -102,13 +99,13 @@ const RecepcionistaView: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        turno.disponible === 'DISPONIBLE' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
+                        turno.estado === 'DISPONIBLE' ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
                       }`}>
-                        {turno.disponible}
+                        {turno.estado}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center space-x-2">
-                      {turno.disponible === 'RESERVADO' && (
+                      {turno.estado === 'RESERVADO' && (
                         <button
                           onClick={() => handleCambiarEstado(turno.id, 'CANCELADO')}
                           className="bg-red-50 hover:bg-red-100 text-red-600 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
@@ -116,7 +113,7 @@ const RecepcionistaView: React.FC = () => {
                           Cancelar Turno
                         </button>
                       )}
-                      {turno.disponible === 'CANCELADO' && (
+                      {turno.estado === 'CANCELADO' && (
                         <button
                           onClick={() => handleCambiarEstado(turno.id, 'DISPONIBLE')}
                           className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
@@ -124,14 +121,14 @@ const RecepcionistaView: React.FC = () => {
                           Re-habilitar
                         </button>
                       )}
-                      {turno.disponible === 'DISPONIBLE' && (
+                      {turno.estado === 'DISPONIBLE' && (
                         <span className="text-xs text-slate-400">Esperando reserva</span>
                       )}
                     </td>
                   </tr>
                 ))
               )}
-            </tbody>
+            </tbody> */}
           </table>
         </div>
       )}

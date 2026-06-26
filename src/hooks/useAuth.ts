@@ -2,10 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 import { UserProfile } from "../types";
 import { setAuthToken } from "../services/api";
-
-// prueba para simular roles sin cambiar de cuenta
-const TEST_MODE = false;
-const TEST_ROLE = "USUARIO"; // 'ADMIN' / 'RECEPCIONISTA' / 'USUARIO'
+import { API_BASE_URL } from "../config/auth0";
 
 export const useAuth = () => {
   const {
@@ -26,30 +23,25 @@ export const useAuth = () => {
         setSynced(true);
         try {
           const token = await getAccessTokenSilently();
-          // Guardamos el token en Axios para que todas las llamadas privadas vayan firmadas
-          setAuthToken(token); 
+          setAuthToken(token);
+
+          // Sincroniza el usuario con la bd al iniciar sesión (crea o actualiza el registro en la tabla personas)
+          await fetch(`${API_BASE_URL}/api/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
         } catch (e) {
-          console.error("Error guardando el token de autenticación:", e);
+          console.error("Error sincronizando usuario con el backend:", e);
         }
 
-        // Simulación inteligente para el video
-        if (TEST_MODE) {
-          setUser({
-            sub: auth0User.sub || "",
-            email: auth0User.email || "",
-            name: auth0User.name || "",
-            roles: [TEST_ROLE],
-          });
-        } else {
-          // Cambiamos el namespace de la cafetería al del centro médico
-          const roles = auth0User["https://turnos-medicos.com/roles"] || ["USUARIO"];
-          setUser({
-            sub: auth0User.sub || "",
-            email: auth0User.email || "",
-            name: auth0User.name || "",
-            roles: roles,
-          });
-        }
+        const roles = auth0User["https://turnos-medicos.com/roles"] || ["usuario"];
+        setUser({
+          sub: auth0User.sub || "",
+          email: auth0User.email || "",
+          name: auth0User.name || "",
+          roles: roles,
+        });
+
       } else if (!isAuthenticated) {
         setUser(null);
         setSynced(false);
@@ -58,15 +50,6 @@ export const useAuth = () => {
     syncAndSetUser();
   }, [isAuthenticated, auth0User, getAccessTokenSilently, synced]);
 
-  useEffect(() => {
-    // Muestra el token en la consola de desarrollo
-    if (isAuthenticated) {
-      getAccessTokenSilently().then((token) => {
-        console.log("JWT de Auth0:", token);
-      });
-    }
-  }, [isAuthenticated, getAccessTokenSilently]);
-
   const hasRole = (role: string): boolean => {
     if (!user || !user.roles) return false;
     return user.roles
@@ -74,9 +57,7 @@ export const useAuth = () => {
       .includes(role.trim().toLowerCase());
   };
 
-  const login = () => {
-    loginWithRedirect();
-  };
+  const login = () => loginWithRedirect();
 
   const handleLogout = () => {
     logout({

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../src/hooks/useAuth';
 import Header from '../src/components/Layout/Header';
-import MisTurnosView from '../src/components/MisTurnos/MisTurnosView';
+import TurnosView from '../src/components/Turnos/TurnosView';
 import { useRouter } from 'next/router';
 
 export default function ReservarPage() {
@@ -50,7 +50,7 @@ export default function ReservarPage() {
                     <h1 className="text-2xl font-bold text-slate-800">Confirmación y Reserva de Citas</h1>
                     <p className="text-sm text-slate-600">Completá los pasos para asegurar tu espacio de atención.</p>
                 </div>
-                <MisTurnosView userView={true} />
+                <TurnosView />
             </main>
         </div>
     );

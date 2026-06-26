@@ -27,8 +27,8 @@ export default function AdminPage() {
   if (!user) return null;
 
   const userRoles = (user as any).roles || [];
-  const esMedico = userRoles.includes('ADMIN');
-  const esRecepcionista = userRoles.includes('RECEPCIONISTA');
+  const esMedico = userRoles.includes('admin');
+  const esRecepcionista = userRoles.includes('recepcionista');
 
   // Si no es ni médico ni recepcionista no puede acceder a esta página
   if (!esMedico && !esRecepcionista) {

@@ -15,7 +15,8 @@ class TurnoService {
   }
 
   async getTurnosDisponibles(): Promise<TurnoDTO[]> {
-    const response = await fetch(`${this.baseUrl}/public/turnos`);
+    const response = await fetch(`${this.baseUrl}/api/public/turnos`); 
+
     if (!response.ok) {
       throw new Error("Error al obtener la cartilla de turnos disponibles");
     }
@@ -29,7 +30,7 @@ class TurnoService {
   ) {
     const activeToken = token || globalToken;
     
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+    const response = await fetch(`${this.baseUrl}/api${endpoint}`, {
       ...options,
       headers: {
         ...options.headers,
@@ -62,7 +63,7 @@ class TurnoService {
 
   async getTurnosByPaciente(emailPaciente: string, token?: string): Promise<TurnoDTO[]> {
     return this.makeAuthenticatedRequest(
-      `/private/turnos/mis-citas?email=${encodeURIComponent(emailPaciente)}`,
+      `/private/turnos/mis-citas`,
       {},
       token
     );
@@ -81,7 +82,7 @@ class TurnoService {
       `/private/turnos/${turnoId}/estado`,
       {
         method: "PUT",
-        body: JSON.stringify({ disponible: nuevoEstado }),
+        body: JSON.stringify({ estado: nuevoEstado }),
       },
       token
     );

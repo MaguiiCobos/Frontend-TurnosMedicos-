@@ -9,7 +9,6 @@ const Header: React.FC = () => {
   const { isAuthenticated, user, hasRole } = useAuth();
   const router = useRouter();
 
-  // Cambiado a la paleta médica (azul profesional) para indicar la pestaña activa
   const isActive = (path: string) => {
     return router.pathname === path
       ? "bg-blue-600 text-white"
@@ -20,7 +19,6 @@ const Header: React.FC = () => {
     <header className="bg-white shadow-sm border-b border-slate-100">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo Médico */}
           <Link href="/" className="text-xl font-bold text-slate-800 flex items-center gap-2 tracking-tight">
             🏥 <span className="text-blue-600">Portal</span>Salud
           </Link>
@@ -37,7 +35,7 @@ const Header: React.FC = () => {
                 Cartilla de Turnos
               </Link>
 
-              {/* Enlace exclusivo para Pacientes (usuario) */}
+              {/* Ruta exclusiva para pacientes (usuario) */}
               {hasRole("usuario") && (
                 <Link
                   href="/mis-turnos"

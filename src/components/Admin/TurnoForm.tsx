@@ -12,7 +12,7 @@ const TurnoForm: React.FC<TurnoFormProps> = ({ initialData, onSave, onCancel }) 
     fecha: initialData?.fecha || '',
     horario: initialData?.horario || '',
     ubicacion: initialData?.ubicacion || '',
-    disponible: initialData?.disponible || 'DISPONIBLE',
+    estado: initialData?.estado || 'DISPONIBLE',
     customerEmail: initialData?.customerEmail || null,
     customerName: initialData?.customerName || null
   });
@@ -50,21 +50,16 @@ const TurnoForm: React.FC<TurnoFormProps> = ({ initialData, onSave, onCancel }) 
     e.preventDefault();
 
     if (validateForm()) {
-      // Tu lógica de formateo de horario existente
       const horarioFormateado = formData.horario.length === 5 
         ? `${formData.horario}:00` 
         : formData.horario;
 
-      // 🌟 Construimos el objeto exacto adaptado a lo que espera tu TurnoDTO
       onSave({
         fecha: formData.fecha,
         horario: horarioFormateado,
         ubicacion: formData.ubicacion,
-        disponible: formData.disponible || 'DISPONIBLE',
-        // Convertimos un posible null en undefined para satisfacer el tipado estricto
-        customerEmail: formData.customerEmail || undefined,
-        customerName: formData.customerName || undefined
-      } as any); // Aplicamos un casteo final para asegurar compatibilidad total
+        estado: formData.estado || 'DISPONIBLE',
+      } as any);
     }
   };
 
@@ -91,7 +86,6 @@ const TurnoForm: React.FC<TurnoFormProps> = ({ initialData, onSave, onCancel }) 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Campo Fecha */}
       <div>
         <label htmlFor="fecha" className="block text-sm font-medium text-slate-700 mb-1">
           Fecha de Atención
@@ -149,14 +143,12 @@ const TurnoForm: React.FC<TurnoFormProps> = ({ initialData, onSave, onCancel }) 
         {errors.ubicacion && <p className="text-red-500 text-xs mt-1">{errors.ubicacion}</p>}
       </div>
 
-      {/* Estado informativo */}
       <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
         <p className="text-xs text-slate-600">
           💡 Al guardar, el nuevo espacio se añadirá de forma inmediata a la cartilla pública como <span className="font-semibold text-green-600">DISPONIBLE</span> para que los pacientes puedan reservarlo.
         </p>
       </div>
 
-      {/* Botonera de Envío */}
       <div className="flex space-x-3 pt-4">
         <button
           type="submit"

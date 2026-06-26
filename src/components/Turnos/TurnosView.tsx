@@ -17,6 +17,7 @@ const TurnosView: React.FC<TurnosViewProps> = ({
   const [turnos, setTurnos] = useState<TurnoDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { getAccessToken } = useAuth();
 
   const loadTurnos = async () => {
     try {
@@ -25,12 +26,13 @@ const TurnosView: React.FC<TurnosViewProps> = ({
 
       let items: TurnoDTO[] = [];
       if (adminMode && isAuthenticated) {
-        items = await turnoService.getAllTurnos();
+        const token = await getAccessToken();
+        items = await turnoService.getAllTurnos(token);
       } else {
         items = await turnoService.getTurnosDisponibles();
       }
 
-      // Ordenar cronológicamente por fecha y hora
+      // Ordena cronológicamente por fecha y hora
       items.sort((a, b) => {
         const fechaA = new Date(`${a.fecha}T${a.horario}`);
         const fechaB = new Date(`${b.fecha}T${b.horario}`);

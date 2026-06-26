@@ -9,7 +9,7 @@ interface MisTurnosViewProps {
 }
 
 const MisTurnosView: React.FC<MisTurnosViewProps> = ({ userView = false }) => {
-  const { user } = useAuth();
+  const { user, getAccessToken } = useAuth();
   const [turnos, setTurnos] = useState<TurnoDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -18,23 +18,26 @@ const MisTurnosView: React.FC<MisTurnosViewProps> = ({ userView = false }) => {
     try {
       setLoading(true);
       setError(null);
+
+      const token = await getAccessToken();
       
       let turnosList: TurnoDTO[] = [];
       
       if (userView) {
-        // se obtienen los turnos reservados por este paciente usando su email
-        const emailPaciente = user?.email || '';
-        turnosList = await turnoService.getTurnosByPaciente(emailPaciente);
+        turnosList = await turnoService.getTurnosByPaciente(token);
       } else {
-        turnosList = await turnoService.getAllTurnos();
+        turnosList = await turnoService.getAllTurnos(token);
       }
       
-      // lista cronologicamente
       turnosList.sort((a, b) => {
         const fechaA = new Date(`${a.fecha}T${a.horario}`);
         const fechaB = new Date(`${b.fecha}T${b.horario}`);
         return fechaA.getTime() - fechaB.getTime();
       });
+
+      if (userView) {
+        turnosList = turnosList.filter(t => t.estado !== 'CANCELADO');
+      }
 
       setTurnos(turnosList);
     } catch (err) {
@@ -46,15 +49,16 @@ const MisTurnosView: React.FC<MisTurnosViewProps> = ({ userView = false }) => {
 
   useEffect(() => {
     loadTurnos();
-  }, [userView, user?.email]);
+  }, [userView]);
 
   const handleCancelTurno = async (turnoId: number) => {
     try {
-      await turnoService.updateTurnoStatus(turnoId, 'CANCELADO');
+      const token = await getAccessToken();
+      await turnoService.updateTurnoStatus(turnoId, 'CANCELADO', token);
       
       setTurnos(prevTurnos => 
         prevTurnos.map(t => 
-          t.id === turnoId ? { ...t, disponible: 'CANCELADO' } : t
+          t.id === turnoId ? { ...t, estado: 'CANCELADO' as const } : t
         )
       );
       alert('Turno cancelado exitosamente.');
@@ -63,29 +67,21 @@ const MisTurnosView: React.FC<MisTurnosViewProps> = ({ userView = false }) => {
     }
   };
 
-  const getStatusColor = (disponible: string) => {
-    switch (disponible) {
-      case 'DISPONIBLE':
-        return 'bg-green-50 text-green-700 border-green-200';
-      case 'RESERVADO':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'CANCELADO':
-        return 'bg-red-50 text-red-700 border-red-200';
-      default:
-        return 'bg-slate-50 text-slate-700 border-slate-200';
+  const getStatusColor = (estado: string) => {
+    switch (estado) {
+      case 'DISPONIBLE': return 'bg-green-50 text-green-700 border-green-200';
+      case 'RESERVADO':  return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'CANCELADO':  return 'bg-red-50 text-red-700 border-red-200';
+      default:           return 'bg-slate-50 text-slate-700 border-slate-200';
     }
   };
 
-  const getStatusText = (disponible: string) => {
-    switch (disponible) {
-      case 'DISPONIBLE':
-        return 'Disponible';
-      case 'RESERVADO':
-        return 'Turno Reservado';
-      case 'CANCELADO':
-        return 'Cita Cancelada';
-      default:
-        return disponible;
+  const getStatusText = (estado: string) => {
+    switch (estado) {
+      case 'DISPONIBLE': return 'Disponible';
+      case 'RESERVADO':  return 'Turno Reservado';
+      case 'CANCELADO':  return 'Cita Cancelada';
+      default:           return estado;
     }
   };
 

@@ -1,14 +1,12 @@
-// En lugar de MenuItem, ahora manejamos la estructura exacta del Turno de la Base de Datos
 export interface TurnoDTO {
   id: number;             
-  fecha: string;          
-  horario: string;        
+  fecha: string;     // formato: "YYYY-MM-DD"   
+  horario: string;    // formato: "HH:mm:ss"
   ubicacion: string;      
-  disponible: 'DISPONIBLE' | 'RESERVADO' | 'CANCELADO' | string;
+  estado: 'DISPONIBLE' | 'RESERVADO' | 'CANCELADO' | string;
   customerEmail?: string;  // mail del paciente que reservo
   customerName?: string;  
 }
-
 export interface UserProfile {
   sub: string;
   email: string;
@@ -17,7 +15,6 @@ export interface UserProfile {
 }
 
 export type UserRole = 'admin' | 'recepcionista' | 'usuario';
-
 export interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
