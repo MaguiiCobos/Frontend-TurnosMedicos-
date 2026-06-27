@@ -27,6 +27,12 @@ const RecepcionistaView: React.FC = () => {
     cargarTurnos();
   }, []);
 
+  const turnosFiltrados = turnos.filter(t =>
+    t.customerEmail
+      ? t.customerEmail.toLowerCase().includes(filterEmail.toLowerCase())
+      : filterEmail.trim() === ''
+  );
+
   const handleCambiarEstado = async (
     id: number, 
     nuevoEstado: 'DISPONIBLE' | 'RESERVADO' | 'CANCELADO' | string
@@ -77,7 +83,7 @@ const RecepcionistaView: React.FC = () => {
                 <th className="px-6 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Acciones</th>
               </tr>
             </thead>
-            {/* <tbody className="divide-y divide-slate-100 bg-white text-sm text-slate-700">
+            <tbody className="divide-y divide-slate-100 bg-white text-sm text-slate-700">
               {turnosFiltrados.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-8 text-slate-400">No se encontraron turnos registrados.</td>
@@ -128,7 +134,7 @@ const RecepcionistaView: React.FC = () => {
                   </tr>
                 ))
               )}
-            </tbody> */}
+            </tbody>
           </table>
         </div>
       )}
