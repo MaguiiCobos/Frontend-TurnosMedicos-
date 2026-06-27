@@ -7,11 +7,13 @@ import TurnoCard from './TurnoCard';
 interface TurnosViewProps {
   adminMode?: boolean;
   onStatusChangeItem?: (id: number, nuevoEstado: string) => void;
+  canReserve?: boolean;
 }
 
 const TurnosView: React.FC<TurnosViewProps> = ({ 
   adminMode = false, 
-  onStatusChangeItem 
+  onStatusChangeItem,
+  canReserve = false
 }) => {
   const { isAuthenticated, hasRole, user } = useAuth();
   const [turnos, setTurnos] = useState<TurnoDTO[]>([]);
@@ -124,7 +126,7 @@ const TurnosView: React.FC<TurnosViewProps> = ({
             onReservar={handleReservarTurno}
             onStatusChange={onStatusChangeItem}
             adminMode={adminMode}
-            canOrder={hasRole('usuario')} // Solo el rol usuario puede agendar turnos
+            canOrder={canReserve}
           />
         ))}
       </div>
